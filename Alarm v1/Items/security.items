@@ -1,0 +1,31 @@
+//Development
+//==========================================================================================================================
+
+//Strings
+//__________________________________________________________________________________________________________________________
+String DStr_Secur_Dev1                                              // Used for troubleshooting the alarmsounding
+String DStr_Secur_Dev2              {expire="1s,state=NULL"}        // Used for the Reset Selector, reset to NULL after 1s
+String DStr_Secur_Dev3                                              // Used for beep beep / no beeb beeb
+
+//Numbers
+//__________________________________________________________________________________________________________________________
+Number DNum_Secur_Dev1                                              // Used for troubleshooting the counter value
+Number DNum_Secur_Dev2                                              // Not in use
+Number DNum_Secur_Dev3                                              // Not in use
+
+
+
+//Production
+//==========================================================================================================================
+
+//Strings
+//__________________________________________________________________________________________________________________________
+String Str_Secur_Panel1             {expire="1s,state=NULL" }       // Value of the numpad. Reset to NULL after 1 second
+String Str_Secur_AlarmState                                         // Saves the state of the alarm
+String Str_Secur_AlarmTrigger       {expire="1s,state=0"}           // Used for triggering the alarm. Reset to NULL after 1 second
+String Sts_Secur_Counter
+//__________________________________________________________________________________________________________________________
+//Switches
+
+//__________________________________________________________________________________________________________________________
+//Numbers

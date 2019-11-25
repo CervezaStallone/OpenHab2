@@ -1,0 +1,111 @@
+/*_____________Variables_____________ 
+This section loads the variables they are used througout the whole document */
+var int counter = 1
+
+/*_____________Development_____________
+This section of the .rules document is for develpoment.
+It is placed in the same document because sometimes you have to
+code something in the production section as well
+______________________________________________________________________ */
+
+
+/* Reset Function
+**This rule is used for the reset selector. */
+
+rule "Reset Function"
+when
+    Item DNum_Secur_Dev2 received update
+then
+    if( DNum_Secur_Dev2 == 1 ) {
+        Str_Secur_AlarmState.sendCommand("OFF")
+        DStr_Secur_Dev1.sendCommand("No sound")
+        counter=1
+    }
+
+    if( DNum_Secur_Dev2 == 2 ) {
+        Str_Secur_Panel1.sendCommand("999")
+    }    
+end
+
+
+/*_____________Production_____________
+This section is the section of which the development ended and which is stable
+______________________________________________________________________ */
+
+
+/* Activate Alarm.
+**This rule is triggered when the numpad value changes.**
+
+When the numpad receives the value sting of "999",
+the alarm state is changed to "ON". Also say "Alarm Activated",
+and (re)set the counter to 1 */
+
+rule "Activate Alarm"
+when
+    Item Str_Secur_Panel1 changed 
+then
+    if( Str_Secur_Panel1.state == "999" ) {
+        Str_Secur_AlarmState.sendCommand("ON")
+        counter=1
+    }
+end
+
+
+/* Deactivate Alarm
+**This rule is triggered when the numpad value changes.**
+
+When the numpad receives the value sting of "777",
+the alarm state is changed to "OFF". Also say "Alarm Deactivated",
+and (re)set the counter to 1 */
+
+rule "Deactivate Alarm"
+when
+    Item Str_Secur_Panel1 changed 
+then
+    if( Str_Secur_Panel1.state == "777" ) {
+        DStr_Secur_Dev1.sendCommand("No sound")
+        Str_Secur_AlarmState.sendCommand("OFF")
+        counter=1
+        }
+end
+
+
+/* Alarm Trigger
+**This rule is triggered when the alarm trigger value changes.**
+
+When the alarm trigger value changes, wait 3 seconds and check if 
+the AlarmStatue variable has the value "ON". Set the devString SoundAlarm
+to "sound", to show if there is sound and play alarm1.mp3 via webaudio. After
+this wait 10 seconds. */
+
+rule "Alarm Trigger"
+when
+    Item Str_Secur_AlarmTrigger changed
+then
+    Thread::sleep(4000) //3 Second Delay to sound the alarm
+    while( Str_Secur_AlarmState.state == "ON" ) {
+        DStr_Secur_Dev1.sendCommand("Sound")
+        playSound("webaudio","alarm1.mp3")
+        Thread::sleep(10000) 
+    }    
+end
+
+
+/* Counter
+** This rule is triggered when the numpad receives an update**
+
+Make a integer var named counter and set the value to 1
+when the alarm numbad recieved an update check if its NOT equal (!=) to "999"
+ or (||) "777" string values and if it is NOT equal (!=) change the counter value
+ to the current value +1 (counter = counter + 1). Also parse the counter value
+ to string into the development number variable SecurDev1 for troubleshooting*/
+
+rule "Counter"
+when
+    Item Str_Secur_Panel1 received update 
+then
+    if( Str_Secur_Panel1.state != "999" || Str_Secur_Panel1.state != "777" ) {
+        counter = counter + 1
+        DNum_Secur_Dev1.sendCommand(counter)
+    }
+end
